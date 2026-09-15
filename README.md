@@ -1,74 +1,199 @@
 # GhostForge
 
-## Distributed Trackmania TAS Research Lab
+## Trackmania Optimization & Research Platform
 
 > **The server searches. Trackmania decides.**
 
-GhostForge is a distributed Trackmania TAS research and optimization platform. It explores large populations of structured input variations with native Trackmania physics, shares the search across multiple computers, and sends promising candidates back to retail Trackmania for confirmation.
+GhostForge is a Trackmania 2020 research and optimization platform built around one idea: use **native Trackmania physics** to search, test, and understand driving inputs without making the rendered game the inner optimization loop.
 
-## Headline result
+It started as a TAS search project, but the work now spans several connected Trackmania research areas: optimization, native-physics evaluation, distributed execution, geometry and raycast sensing, telemetry/evidence tooling, map analysis, retail/TICK verification, and future controlled physics experiments.
 
-On **Summer 2026 - 06**, GhostForge improved a **24.944 s** reference to **24.916 s** — a **28 ms improvement**. The candidate was reproduced **five consecutive times in retail Trackmania using TICK**. Native physics remains the authority for offline search; this is a measured research result, not a world-record claim.
+## Proven result
 
-The first distributed search used **199,915 useful evaluations** over approximately **37 minutes 20 seconds**, with a measured three-node throughput of **99.480780 useful evaluations/second** (about **358,000 evaluations/hour**).
+On **Summer 2026 - 06**, GhostForge improved a **24.944 s** reference run to **24.916 s** — a **28 ms improvement**.
 
-![First distributed search result](media/track06-improvement.png)
+The 24.916 s candidate was:
 
-## How it works
+- found by automated distributed search;
+- independently reconfirmed by the native oracle;
+- verified as legal for the accepted steering domain;
+- reproduced **five consecutive times** in retail Trackmania using TICK.
+
+This is a tool-assisted research result, not a claim of a human leaderboard record.
+
+## What exists today
+
+GhostForge is more than one optimizer. The research stack currently includes:
+
+### Optimization and TAS search
+
+- legal steering / gas / brake / timing candidate generation;
+- Trackmania-specific mutation operators;
+- distributed candidate evaluation;
+- incumbent banking and confirmation;
+- population-based optimizer experiments, including Nevergrad;
+- compact ephemeral retention so losing search scratch does not accumulate indefinitely.
+
+### Native Trackmania physics evaluation
+
+- a qualified nonvisual native-physics oracle;
+- repeatable positive / negative controls;
+- distributed evaluation across multiple machines;
+- Main-authority confirmation before accepting an improvement;
+- retail/TICK verification for finalists.
+
+### Geometry and scene understanding
+
+- **Track Geometry Engine** work for offline scene queries;
+- lightweight spatial indexing;
+- arbitrary-pose local scene sensing;
+- raycast / clearance / corridor-style observations;
+- map and geometry inspection research;
+- sensor profiles intended for TAS, debugging, and future learning systems.
+
+### Telemetry and evidence
+
+- run identity and synchronization concepts;
+- provenance / freshness / authority-aware telemetry;
+- checkpoint and finish-state reconciliation;
+- compact evidence for accepted results;
+- fail-closed handling when identities or result authority disagree.
+
+### Map research
+
+The project maintains a multi-surface research corpus covering road, grass, plastic, dirt, ice, speed-oriented maps, and unusual surface combinations. Track06 is the first proven optimization benchmark, not the only target.
+
+## How the pieces fit together
 
 ```text
-Map + reference runs
+Maps + reference runs
         ↓
-GhostForge search
+Map / geometry understanding
         ↓
-Native Trackmania physics
+Trackmania-specific candidate generation
         ↓
-Candidate confirmation
+Optimizer / search strategy
         ↓
-Retail Trackmania verification
+Native nonvisual Trackmania physics
+        ↓
+Distributed evaluation
+        ↓
+Bank + confirm real improvements
+        ↓
+Retail Trackmania / TICK verification
+        ↓
+Verified TAS result
 ```
 
-The public model is intentionally simple: search proposes structured controls, native physics evaluates them, and retail Trackmania/TICK confirms promising candidates.
+Supporting research can also branch off from the same foundation:
 
-![GhostForge architecture](media/ghostforge-architecture.png)
-
-## Performance
-
-| Node | Useful evaluations / second |
-| --- | ---: |
-| Main PC | 71.214 |
-| Worker-1 | 61.178273 |
-| New Worker | 37.672794 |
-| Measured three-node farm | **99.480780** |
-
-These are useful-evaluation measurements, not a claim that node rates add linearly in every workload.
-
-![GhostForge native physics throughput](media/ghostforge-throughput.png)
-
-## Why fullspeed maps are interesting
-
-Tiny improvements in steering angle, speedslide timing, transitions, wallrides, and exit speed can compound over the remainder of a fullspeed run. That makes these maps a useful setting for studying search quality, physics fidelity, and long-horizon optimization.
+```text
+Map geometry + car pose
+        ↓
+Raycast / scene sensing
+        ↓
+Controlled physics experiments
+        ↓
+Technique datasets / future learned models
+```
 
 ## Current status
 
-- Track06’s 24.916 s result has five consecutive retail Trackmania/TICK reproductions.
-- Native physics remains authoritative for offline candidate search.
-- Current research direction: smarter population-based optimization, including Nevergrad integration.
-- C25A ephemeral retention and storage cleanup is complete.
+| Capability | Status |
+| --- | --- |
+| Native nonvisual Trackmania physics oracle | **Qualified** |
+| Distributed evaluation | **Qualified** |
+| Automated TAS search | **Working** |
+| 24.944 → 24.916 improvement | **Verified in retail** |
+| Ephemeral search retention | **Implemented** |
+| Nevergrad integration | **Qualified end-to-end** |
+| 30-minute Nevergrad Gate D search | **Completed — no gain** |
+| Track Geometry Engine | **Research implementation exists** |
+| Raycast / scene sensing | **Research implementation exists** |
+| Multi-map generalization | **Next major step** |
+| Physics Lab / synthetic technique maps | **Planned** |
+| End-user installer and UI | **Planned** |
 
-## Roadmap
+## What we are working toward
 
-- Finish the public write-up and continue retail verification research.
-- Test GhostForge on fullspeed maps.
-- Expand to grass, plastic, dirt, and ice.
-- Improve distributed search efficiency.
-- Investigate targeted trick/contact discovery.
-- Eventually ingest maps and elite ghosts automatically.
-- After separate publication audits, consider standalone utility repositories for `track-geometry-engine` and a Trackmania raycast/sensor toolkit.
+### 1. Prove GhostForge on more than one map
 
-Compiled GhostForge binaries are withheld until a separately approved release candidate exists.
+The next important question is not whether Track06 can be searched again. It is whether the same GhostForge workflow generalizes cleanly to a second map without rebuilding the system around it.
 
-## Private/public boundary
+### 2. Turn research tooling into reusable Trackmania tools
 
-This repository is a showcase of approved concepts, measurements, and branding. Private backend code, Ghost files, credentials, machine details, internal evidence, prompts, coordination data, and proprietary game/server assets are intentionally not included.
+Some non-core systems may eventually become standalone public utilities after publication audits, including:
 
+- Track Geometry Engine;
+- Trackmania raycast / scene-sensing toolkit;
+- map inspection utilities;
+- telemetry / evidence helpers;
+- research adapters useful outside GhostForge itself.
+
+### 3. Build a GhostForge Physics Lab
+
+Purpose-built maps could isolate difficult Trackmania mechanics and let us systematically vary geometry, speed, angle, car orientation, and control timing.
+
+Possible research targets include:
+
+- nose bugs;
+- uber bugs;
+- bounces and landings;
+- speedslides;
+- ice behavior;
+- plastic / surface transitions;
+- wall and edge contacts.
+
+The goal is not just to reproduce tricks, but to map the conditions under which Trackmania's own physics says they succeed or fail.
+
+### 4. Make GhostForge usable by normal players and researchers
+
+The eventual product experience should look much simpler than the research environment:
+
+```text
+Install GhostForge
+      ↓
+Select / import a map
+      ↓
+Provide or discover a reference run
+      ↓
+Choose an optimization or analysis mode
+      ↓
+Run
+      ↓
+Review verified results
+```
+
+Users should not need to understand worker VMs, internal ledgers, milestone names, or research coordination.
+
+## Design principles
+
+- **Trackmania decides.** Native and retail physics remain authoritative.
+- **Search, do not render.** Rendering is not required for the inner optimization loop.
+- **Reuse before rebuilding.** Generic infrastructure should come from mature libraries when practical.
+- **Keep Trackmania-specific intelligence in GhostForge.** Candidate semantics, objectives, verification, and technique logic remain project-owned.
+- **Fail closed.** Identity, legality, or authority mismatches stop evaluation.
+- **Keep evidence small.** Losing candidates are ephemeral by default.
+- **Offline research only.** Automated multiplayer driving and leaderboard submission are outside normal project scope.
+
+## Public / private boundary
+
+This public repository is intentionally a project overview and showcase.
+
+It does **not** include private backend implementation, worker credentials, machine paths, VM configuration, raw Ghost corpora, internal ledgers, private prompts / coordination files, proprietary game/server assets, or sensitive runtime data.
+
+The private engineering repository remains the development workspace. Public material focuses on capabilities, verified results, architecture, research directions, and eventually approved releases.
+
+## More
+
+- [Project map](docs/project-map.md)
+- [Architecture](docs/architecture.md)
+- [Results](docs/results.md)
+- [Roadmap](docs/roadmap.md)
+
+---
+
+### GhostForge
+
+**Trackmania Optimization & Research Platform**  
+*The server searches. Trackmania decides.*
